@@ -1,5 +1,9 @@
 const http = require('http'); // pull in the HTTP server module
-const fs = require('fs');  // pull in the file system module
+// const fs = require('fs');  // pull in the file system module
+const htmlHandler = require('./htmlResponses.js');
+const textHandler = require('./textResponses.js');
+const jsonHandler = require('./jsonResponses.js');
+const imageHandler = require('./imageResponses.js');
 
 /**
   set the port to run the server on. We use process.env.PORT and
@@ -21,7 +25,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
   server start before the server is operational then it never
   runs again
 **/
-const index = fs.readFileSync(`${__dirname}/../client/client.html`);
+// const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 
 /**
   call back for requests
@@ -43,22 +47,47 @@ const onRequest = (request, response) => {
     This is where you would do server logic for determining which
     page to load or file to send
   **/
-
+  switch (request.url) {
+    case '/':
+      htmlHandler.getIndex(request, response);
+      break;
+    case '/page2':
+      htmlHandler.getPage2(request, response);
+      break;
+    case '/hello':
+      textHandler.getHello(request, response);
+      break;
+    case '/time':
+      textHandler.getTime(request, response);
+      break;
+    case '/helloJSON':
+      jsonHandler.getHelloJSON(request, response);
+      break;
+    case '/timeJSON':
+      jsonHandler.getTimeJSON(request, response);
+      break;
+    case '/dankmemes':
+      imageHandler.getSpongegar(request, response);
+      break;
+    default:
+      htmlHandler.getIndex(request, response);
+      break;
+  }
   /**
     send the response code (200 for okay, 404 for file not found, etc)
     Set the content-type header (needed for HTTP requests) to text/html
     so the client knows this is html NOT plain text. That will allow a
     browser to interpret the HTML instead of show it
   **/
-  response.writeHead(200, { 'Content-Type': 'text/html' });
+  // response.writeHead(200, { 'Content-Type': 'text/html' });
 
-  // write out our response data - in this case, writing the entire
-  // file we loaded above
-  response.write(index);
+  // // write out our response data - in this case, writing the entire
+  // // file we loaded above
+  // response.write(index);
 
-  // send the response. This will close the stream and send back the
-  // response. You won't be able to write any more to this response.
-  response.end();
+  // // send the response. This will close the stream and send back the
+  // // response. You won't be able to write any more to this response.
+  // response.end();
 };
 
 // start up our HTTP server, set the request callback and start the port
